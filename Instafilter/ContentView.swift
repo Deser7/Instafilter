@@ -5,27 +5,31 @@
 //  Created by Наташа Спиридонова on 27.08.2025.
 //
 
-import CoreImage
-import CoreImage.CIFilterBuiltins
+import PhotosUI
 import SwiftUI
 
 struct ContentView: View {
     @State private var processedImage: Image?
     @State private var filterIntensity = 0.5
+    @State private var selectedItem: PhotosPickerItem?
     
     var body: some View {
         NavigationStack {
             VStack {
                 Spacer()
                 
-                if let processedImage {
-                    processedImage
-                        .resizable()
-                        .scaledToFit()
-                } else {
-                    ContentUnavailableView("No picture", systemImage: "photo.badge.plus", description: Text("Tap to image a photo"))
+                PhotosPicker(selection: $selectedItem) {
+                    if let processedImage {
+                        processedImage
+                            .resizable()
+                            .scaledToFit()
+                    } else {
+                        ContentUnavailableView("No picture", systemImage: "photo.badge.plus", description: Text("Tap to image a photo"))
 
+                    }
                 }
+                .buttonStyle(.plain)
+                .onChange(of: selectedItem, loadImage)
                 
                 Spacer()
                 
@@ -49,30 +53,12 @@ struct ContentView: View {
         
     }
     
-    /*
     func loadImage() {
-        let inputImage = UIImage(resource: .example)
-        let beginImage = CIImage(image: inputImage)
-        
-        let context = CIContext()
-        let currentFilter = CIFilter.twirlDistortion()
-        
-        currentFilter.inputImage = beginImage
-        let amount = 1.0
-        let inputKeys = currentFilter.inputKeys
-        
-        if inputKeys.contains(kCIInputIntensityKey) { currentFilter.setValue(amount, forKey: kCIInputIntensityKey) }
-        if inputKeys.contains(kCIInputRadiusKey) { currentFilter.setValue(amount * 200, forKey: kCIInputRadiusKey) }
-        if inputKeys.contains(kCIInputScaleKey) { currentFilter.setValue(amount * 10, forKey: kCIInputScaleKey) }
-        
-        
-        guard let outputImage = currentFilter.outputImage else { return }
-        guard let cgImage = context.createCGImage(outputImage, from: outputImage.extent) else { return }
-        
-        let uiImage = UIImage(cgImage: cgImage)
-        image = Image(uiImage: uiImage)
+        Task {
+            guard let imageData = try await selectedItem?.loadTransferable(type: Data.self) else { return }
+            guard let inputImage = UIImage(data: imageData) else { return }
+        }
     }
- */
 }
 
 #Preview {
