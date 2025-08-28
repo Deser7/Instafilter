@@ -10,17 +10,46 @@ import CoreImage.CIFilterBuiltins
 import SwiftUI
 
 struct ContentView: View {
-    @State private var image: Image?
+    @State private var processedImage: Image?
+    @State private var filterIntensity = 0.5
     
     var body: some View {
-        VStack {
-            image?
-                .resizable()
-                .scaledToFit()
+        NavigationStack {
+            VStack {
+                Spacer()
+                
+                if let processedImage {
+                    processedImage
+                        .resizable()
+                        .scaledToFit()
+                } else {
+                    ContentUnavailableView("No picture", systemImage: "photo.badge.plus", description: Text("Tap to image a photo"))
+
+                }
+                
+                Spacer()
+                
+                HStack {
+                    Text("Intensity")
+                    Slider(value: $filterIntensity)
+                }
+                
+                HStack {
+                    Button("Change filter", action: changeFilter)
+                    
+                    Spacer()
+                }
+            }
+            .padding([.horizontal, .bottom])
+            .navigationTitle("Instafilter")
         }
-        .onAppear(perform: loadImage)
     }
     
+    func changeFilter() {
+        
+    }
+    
+    /*
     func loadImage() {
         let inputImage = UIImage(resource: .example)
         let beginImage = CIImage(image: inputImage)
@@ -43,6 +72,7 @@ struct ContentView: View {
         let uiImage = UIImage(cgImage: cgImage)
         image = Image(uiImage: uiImage)
     }
+ */
 }
 
 #Preview {
