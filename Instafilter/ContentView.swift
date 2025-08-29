@@ -23,6 +23,10 @@ struct ContentView: View {
     @State private var currentFilter: CIFilter = CIFilter.sepiaTone()
     let context = CIContext()
     
+    private var imageIsEmpty: Bool {
+        selectedItem == nil
+    }
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -34,7 +38,11 @@ struct ContentView: View {
                             .resizable()
                             .scaledToFit()
                     } else {
-                        ContentUnavailableView("No picture", systemImage: "photo.badge.plus", description: Text("Tap to image a photo"))
+                        ContentUnavailableView(
+                            "Нет изображения",
+                            systemImage: "photo.badge.plus",
+                            description: Text("Нажмите, чтобы выбрать фото")
+                        )
 
                     }
                 }
@@ -44,35 +52,37 @@ struct ContentView: View {
                 Spacer()
                 
                 HStack {
-                    Text("Intensity")
+                    Text("Интенсивность")
                     Slider(value: $filterIntensity)
                         .onChange(of: filterIntensity, applyProcessing)
+                        .disabled(imageIsEmpty)
                 }
                 
                 HStack {
-                    Button("Change filter", action: changeFilter)
+                    Button("Изменить фильтр", action: changeFilter)
+                        .disabled(imageIsEmpty)
                     
                     Spacer()
                     
                     if let processedImage {
                         ShareLink(
                             item: processedImage,
-                            preview: SharePreview("Instafilter image", image: processedImage)
+                            preview: SharePreview("Изображение Instafilter", image: processedImage)
                         )
                     }
                 }
             }
             .padding([.horizontal, .bottom])
             .navigationTitle("Instafilter")
-            .confirmationDialog("Select a filter", isPresented: $showingFilters) {
-                Button("Crystallize") { setFilter(CIFilter.crystallize() )}
-                Button("Edges") { setFilter(CIFilter.edges() )}
-                Button("Gaussian Blur") { setFilter(CIFilter.gaussianBlur() )}
-                Button("Pixellate") { setFilter(CIFilter.pixellate() )}
-                Button("Sepia Tone") { setFilter(CIFilter.sepiaTone() )}
-                Button("Unsharp Mask") { setFilter(CIFilter.unsharpMask() )}
-                Button("Vignette") { setFilter(CIFilter.vignette() )}
-                Button("Cancel", role: .cancel) { }
+            .confirmationDialog("Выберите фильтр", isPresented: $showingFilters) {
+                Button("Кристаллизация") { setFilter(CIFilter.crystallize() )}
+                Button("Края") { setFilter(CIFilter.edges() )}
+                Button("Размытие по Гауссу") { setFilter(CIFilter.gaussianBlur() )}
+                Button("Пикселизация") { setFilter(CIFilter.pixellate() )}
+                Button("Сепия") { setFilter(CIFilter.sepiaTone() )}
+                Button("Нерезкая маска") { setFilter(CIFilter.unsharpMask() )}
+                Button("Виньетка") { setFilter(CIFilter.vignette() )}
+                Button("Отмена", role: .cancel) { }
             }
         }
     }
