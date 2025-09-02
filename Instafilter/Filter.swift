@@ -31,7 +31,17 @@ struct FilterParameter: Identifiable {
     let title: String
     let defaultValue: Double
     let range: ClosedRange<Double>
-    let step = 0.01
+    let step: Double
+    var currentValue: Double
+    
+    init(key: String, title: String, defaultValue: Double, range: ClosedRange<Double>, step: Double = 0.01) {
+        self.key = key
+        self.title = title
+        self.defaultValue = defaultValue
+        self.range = range
+        self.step = step
+        self.currentValue = defaultValue
+    }
 }
 
 enum FilterCategory: String, CaseIterable {
